@@ -95,10 +95,26 @@ function formatLogsCells(execLogs, type) {
   return result;
 }
 
+http://10.23.16.85/user/${your_LDAP}/proxy/4040/jobs
+
 function getStandAloneAppId(cb) {
   var words = getBaseURI().split('/');
+  var appId
+
+  const regex = new RegExp('https?:\/\/[\\w.]+/user/[\\w]+/proxy/40[4|5]\\d/[\\w]+/');
+  const baseUri = getBaseURI()
+  
+  if (regex.test(baseUri)) {
+    $.getJSON(uiRoot + "/api/v1/applications", function(response, status, jqXHR) {
+      if (response && response.length > 0) {
+        var appId = response[0].id;
+        cb(appId);
+        return;
+      }
+    });
+  }
+
   var ind = words.indexOf("proxy");
-  var appId;
   if (ind > 0) {
     appId = words[ind + 1];
     cb(appId);
@@ -110,6 +126,7 @@ function getStandAloneAppId(cb) {
     cb(appId);
     return;
   }
+
   // Looks like Web UI is running in standalone mode
   // Let's get application-id using REST End Point
   $.getJSON(uiRoot + "/api/v1/applications", function(response, status, jqXHR) {
@@ -119,6 +136,7 @@ function getStandAloneAppId(cb) {
       return;
     }
   });
+
 }
 
 // This function is a helper function for sorting in datatable.
@@ -149,8 +167,16 @@ function ConvertDurationString(data) {
 
 function createTemplateURI(appId, templateName) {
   var words = getBaseURI().split('/');
-  var ind = words.indexOf("proxy");
   var baseURI;
+
+  const regex = new RegExp('https?:\/\/[\\w.]+/user/[\\w]+/proxy/40[4|5]\\d/[\\w]+/');
+  const baseUri = getBaseURI()
+  
+  if (regex.test(baseUri)) {
+    return uiRoot + "/static/" + templateName + "-template.html";
+  }
+
+  var ind = words.indexOf("proxy");
   if (ind > 0) {
     baseURI = words.slice(0, ind + 1).join('/') + '/' + appId + '/static/' + templateName + '-template.html';
     return baseURI;
@@ -184,8 +210,16 @@ function formatDate(date) {
 
 function createRESTEndPointForExecutorsPage(appId) {
   var words = getBaseURI().split('/');
-  var ind = words.indexOf("proxy");
   var newBaseURI;
+
+  const regex = new RegExp('https?:\/\/[\\w.]+/user/[\\w]+/proxy/40[4|5]\\d/[\\w]+/');
+  const baseUri = getBaseURI()
+  
+  if (regex.test(baseUri)) {
+    return uiRoot + "/api/v1/applications/" + appId + "/allexecutors";
+  }
+
+  var ind = words.indexOf("proxy");
   if (ind > 0) {
     appId = words[ind + 1];
     newBaseURI = words.slice(0, ind + 2).join('/');
@@ -207,8 +241,16 @@ function createRESTEndPointForExecutorsPage(appId) {
 
 function createRESTEndPointForMiscellaneousProcess(appId) {
   var words = getBaseURI().split('/');
-  var ind = words.indexOf("proxy");
   var newBaseURI;
+  
+  const regex = new RegExp('https?:\/\/[\\w.]+/user/[\\w]+/proxy/40[4|5]\\d/[\\w]+/');
+  const baseUri = getBaseURI()
+  
+  if (regex.test(baseUri)) {
+    return uiRoot + "/api/v1/applications/" + appId + "/allmiscellaneousprocess";
+  }
+  
+  var ind = words.indexOf("proxy");
   if (ind > 0) {
     appId = words[ind + 1];
     newBaseURI = words.slice(0, ind + 2).join('/');
