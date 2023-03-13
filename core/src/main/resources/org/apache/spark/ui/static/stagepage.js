@@ -73,9 +73,17 @@ $.extend( $.fn.dataTable.ext.type.order, {
 function stageEndPoint(appId) {
   var queryString = getBaseURI().split('?');
   var words = getBaseURI().split('/');
-  var indexOfProxy = words.indexOf("proxy");
   var stageId = queryString[1].split("&").filter(word => word.includes("id="))[0].split("=")[1];
   var newBaseURI;
+
+  const regex = new RegExp('https?:\/\/[\\w.]+/user/[\\w]+/proxy/40[4|5]\\d/[\\w]+/');
+  const baseUri = getBaseURI()
+  
+  if (regex.test(baseUri)) {
+    return uiRoot + "/api/v1/applications/" + appId + "/stages/" + stageId;
+  }
+
+  var indexOfProxy = words.indexOf("proxy");
   if (indexOfProxy > 0) {
     appId = words[indexOfProxy + 1];
     newBaseURI = words.slice(0, words.indexOf("proxy") + 2).join('/');
